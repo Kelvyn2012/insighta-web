@@ -20,9 +20,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(new URL("/?error=state_mismatch", request.url));
   }
 
-  const resp = await fetch(
-    `${BACKEND_URL}/auth/github/callback/?code=${code}&state=${state}`
-  );
+  // Pass our portal callback URL so the backend uses it in the GitHub code exchange
+  const portalCallback =
+    process.env.NEXT_PUBLIC_APP_URL
+      ? `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback`
+      : "http://localhost:3000/api/auth/callback";
+
+  const backendUrl =
+    `${BACKEND_URL}/auth/github/callback/?code=${code}&state=${state}` +
+    `&redirect_uri=${encodeURIComponent(portalCallback)}`;
+
+  const resp = await fetch(backendUrl);
 
   if (!resp.ok) {
     const body = await resp.json().catch(() => ({}));

@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { BACKEND_URL } from "@/lib/backend";
 
 export async function GET() {
-  const resp = await fetch(`${BACKEND_URL}/auth/github/`);
+  const resp = await fetch(`${BACKEND_URL}/auth/github/`, {
+    headers: { Accept: "application/json" },
+  });
   if (!resp.ok) {
     return NextResponse.json({ error: "Failed to initiate auth" }, { status: 502 });
   }
